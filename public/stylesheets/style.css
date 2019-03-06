@@ -1,0 +1,83 @@
+#messages {
+  flex: 3;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-y: auto;
+  display:flex;
+  flex-flow: column nowrap;
+  justify-content: flex-end;
+}
+
+#topBar{
+  display: flex;
+  flex-flow: row wrap;
+  background-color: lightgray;
+  padding:6px;
+  height: 5%;
+}
+
+#topBar > * {
+  flex: 1;
+}
+
+#userIdentifier{
+  flex: 3;
+}
+
+#messagingBox{
+  display: flex;
+  flex-flow: row wrap;
+  padding: 6px;
+  height: 85%;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  font: 13px Helvetica, Arial;
+}
+
+form {
+  display: flex;
+  flex-flow: row wrap;
+  background: #000;
+  padding: 3px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-height: 10%;
+  overflow: auto;
+}
+form input {
+  padding: 10px;
+  flex: 4;
+  overflow-y: scroll;
+}
+form button {
+  flex: 1;
+  background: rgb(130, 224, 255);
+  border: none;
+  padding: 10px;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+#messages li {
+  padding: 5px;
+  width:100%;
+}
+#messages li:nth-child(odd) {
+  background: #eee;
+}
+
+#userList{
+  flex: 1;
+  overflow-y: auto;
+}
+
+#userList li {
+  list-style-type: none;
+}

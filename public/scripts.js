@@ -10,7 +10,7 @@ $(function () {
 
 
 
-    socket.on('chat message', function(chatHistory){
+    socket.on('chat message', function(chatHistory, id, mappedNames){
         document.getElementById("messages").innerHTML = "";
         for(let i = 0; i<chatHistory.length; i++){
             let min = chatHistory[i].minute;
@@ -18,6 +18,9 @@ $(function () {
             let hour = chatHistory[i].hr;
             let name = chatHistory[i].user;
             let msg = chatHistory[i].content;
+            if(name===mappedNames[id]){
+                msg = "<b>"+msg+"</b>";
+            }
             let color = chatHistory[i].color;
             let nameStyle =  "<styleName style=" +"\""+"color: #"+color+";"+"\""+">"+name+"</styleName>";
             let period = "am";

@@ -4,6 +4,8 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const path = require('path');
 
+var session = require('express-session');
+
 let availableDefaultNickNames = ["Rachel","Ross","Chandler", "Monica", "Phoebe", "Joey",
   "Marcel", "Carol", "Susan", "Gunther", "Janice", "Ugly Naked Guy", "Jack", "Judy", "Mike",
   "Emily", "Estelle", "Richard", "Frank", "Charlie", "Julie", "Tag", "Mona", "Ben", "Pete",
@@ -11,28 +13,45 @@ let availableDefaultNickNames = ["Rachel","Ross","Chandler", "Monica", "Phoebe",
 
 let mappedNicknames = {};
 let onlineUsers = [];
+let mappedCookiesToId = {};
 
 let chatHistory = [];
 let mappedNickColours = {};
 
 //TODO:
-// Messages posted by the user should be bolded in the chat log (or otherwise stylized).
-// If the user gets disconnected and then the user reconnects again, the user should be assigned the same nickname. You can use browser cookies for this purpose.
 // Stylize online users list and whole application
 // Your application should look attractive
 // Test on Firefox
 
+app.use(session({secret: "Shh, its a secret!"}));
 
 app.get('/',function(req,res){
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
+
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
+
+
 io.on('connection', function(socket){
   console.log('a user connected');
+  let cookieId = socket.handshake.headers.cookie;
+  cookieId = cookieId.substr(cookieId.indexOf("connect.sid"), cookieId.indexOf(";"));
+  console.log(cookieId);
+
+  if(mappedCookiesToId[cookieId]){
+    let tempID = mappedCookiesToId[cookieId];
+    mappedCookiesToId[cookieId]= socket.id;
+    let tempName =  mappedNicknames[tempID];
+    mappedNicknames[socket.id] = tempName;
+    mappedNicknames [tempID] = undefined;
+  }else{
+    mappedCookiesToId[cookieId]= socket.id;
+  }
+
   if(mappedNicknames[socket.id]===undefined){
     mappedNicknames[socket.id] = availableDefaultNickNames.shift();
     mappedNickColours[socket.id] = "000000";
@@ -42,7 +61,7 @@ io.on('connection', function(socket){
     onlineUsers.push(name);
   }
   io.emit('connected', onlineUsers);
-  io.emit('chat message', chatHistory);
+  io.emit('chat message', chatHistory, 1, {});
   socket.emit('displayUserName', name);
   socket.on('disconnect', function(){
     console.log('user disconnected');
@@ -68,9 +87,19 @@ io.on('connection', function(socket){
     socket.emit('displayUserName', name);
     let message = {user: name, color: mappedNickColours[socket.id], hr: hour, minute: min, content: msg };
     chatHistory.push(message);
-    io.emit('chat message', chatHistory);
+    // send out new messsage to client
+    socket.emit('chat message', chatHistory, socket.id, mappedNicknames);
+    //Send out new message to everyone else keeping the bolded working
+    var clients_in_the_room = io.sockets.connected;
+    for (let id in clients_in_the_room ) {
+      let client_socket = io.sockets.connected[id];
+      if(id!=socket.id){
+        client_socket.emit('chat message', chatHistory, id, mappedNicknames);
+      }
+    }
   });
 });
+
 
 function updateUserName(msg, socket){
   if(msg.includes("/nick ")){

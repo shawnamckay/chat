@@ -20,6 +20,7 @@
 
 #topBar > * {
   flex: 1;
+  font-size: 18px;
 }
 
 #userIdentifier{
@@ -35,6 +36,8 @@
 
 * {
   box-sizing: border-box;
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
 }
 body {
   font: 13px Helvetica, Arial;
@@ -63,6 +66,7 @@ form button {
   padding: 10px;
   margin-right: 10px;
   font-weight: bold;
+  font-size: 16px;
 }
 
 #messages li {
@@ -76,8 +80,15 @@ form button {
 #userList{
   flex: 1;
   overflow-y: auto;
+  text-align: center;
+  font-size: 16px;
 }
 
 #userList li {
   list-style-type: none;
+  font-size: 16px;
+}
+
+#onlineUsers{
+  text-align: center;
 }

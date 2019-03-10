@@ -18,10 +18,8 @@ let mappedCookiesToId = {};
 let chatHistory = [];
 let mappedNickColours = {};
 
-//TODO:
-// Stylize online users list and whole application
-// Your application should look attractive
-// Test on Firefox
+//TODO
+// Final testing
 
 app.use(session({secret: "Shh, its a secret!"}));
 
@@ -48,6 +46,9 @@ io.on('connection', function(socket){
     let tempName =  mappedNicknames[tempID];
     mappedNicknames[socket.id] = tempName;
     mappedNicknames [tempID] = undefined;
+    let tempColor = mappedNickColours[tempID];
+    mappedNickColours[socket.id] = tempColor;
+    mappedNickColours[tempID] = "000000";
   }else{
     mappedCookiesToId[cookieId]= socket.id;
   }
@@ -61,7 +62,8 @@ io.on('connection', function(socket){
     onlineUsers.push(name);
   }
   io.emit('connected', onlineUsers);
-  io.emit('chat message', chatHistory, 1, {});
+  updateChatHistoryFormat(socket);
+  // io.emit('chat message', chatHistory, 1, {});
   socket.emit('displayUserName', name);
   socket.on('disconnect', function(){
     console.log('user disconnected');
@@ -133,9 +135,9 @@ function updateUserNameColour(msg, socket){
     let newColor = msg.split("/nickcolor ")[1];
     let isHexColor  = /[0-9A-F]{6}$/i.test(newColor);
     //If valid color
-    if(isHexColor){
+    if(isHexColor ){
       //Then update color
-      updateChatHistoryColour(mappedNickColours[socket.id], newColor);
+      updateChatHistoryColour(mappedNickColours[socket.id], newColor, mappedNicknames[socket.id]);
       mappedNickColours[socket.id] = newColor;
     }
     else{
@@ -146,11 +148,20 @@ function updateUserNameColour(msg, socket){
 }
 
 
-function updateChatHistoryColour(oldColour, newColour){
+function updateChatHistoryColour(oldColour, newColour, name){
   for(var i=0; i<chatHistory.length; i++){
-    if(chatHistory[i].color===oldColour){
+    if(chatHistory[i].color===oldColour && chatHistory[i].user===name){
       chatHistory[i].color = newColour;
     }
+  }
+}
+
+
+function updateChatHistoryFormat(socket){
+  var clients_in_the_room = io.sockets.connected;
+  for (let id in clients_in_the_room ) {
+    let client_socket = io.sockets.connected[id];
+    client_socket.emit('chat message', chatHistory, id, mappedNicknames);
   }
 }
 

@@ -37,6 +37,8 @@ $(function () {
                 min = 0+min;
             }
             $('#messages').append("<li>"+hour+":"+min+period+" "+nameStyle+": "+msg+"</li>");
+            var element = document.getElementById("messages");
+            element.scrollTop = element.scrollHeight - element.clientHeight;
         }
     });
 
@@ -46,6 +48,8 @@ $(function () {
         for(user in onlineUsers){
             $('#userList').append($('<li>').text(onlineUsers[user]));
         }
+        var element = document.getElementById("messages");
+        element.scrollTop = element.scrollHeight - element.clientHeight;
 
     });
 

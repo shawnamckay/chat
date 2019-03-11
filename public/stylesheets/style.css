@@ -1,13 +1,12 @@
 #messages {
   flex: 3;
   list-style-type: none;
-  margin: 0;
   padding: 0;
-  height: 100%;
+  max-height: 100%;
   overflow-y: auto;
   display:flex;
   flex-flow: column nowrap;
-  justify-content: flex-end;
+  margin-top: auto;
 }
 
 #topBar{
@@ -40,7 +39,8 @@
   font-size: 14px;
 }
 body {
-  font: 13px Helvetica, Arial;
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
 }
 
 form {
